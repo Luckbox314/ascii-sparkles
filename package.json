@@ -1,0 +1,19 @@
+{
+  "name": "ascii-sparkles",
+  "version": "1.0.0",
+  "description": "JS project with a sparkle effect in ascii characters",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "luckbox314",
+  "license": "ISC",
+  "dependencies": {
+    "@pixi/filter-ascii": "^5.1.1",
+    "pixi.js": "^7.2.4"
+  },
+  "devDependencies": {
+    "webpack": "^5.80.0",
+    "webpack-cli": "^5.0.2"
+  }
+}
