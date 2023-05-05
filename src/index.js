@@ -3,20 +3,20 @@ import {AsciiFilter} from '@pixi/filter-ascii';
 
 const app = new PIXI.Application({width: 400 , height: 400 });
 let circles = [];
-// const globalVariables = {
-//     speed: 1,
-//     turningSpeed: 1,
-//     density: 100,
-//     size: 20,
-//     color: '#769AB1',
-// }
 const globalVariables = {
     speed: 1,
     turningSpeed: 1,
-    density: 8,
-    size: 200,
-    color: '#fff',
+    density: 90,
+    size: 35,
+    color: '#efce7c',
 }
+// const globalVariables = {
+//     speed: 1,
+//     turningSpeed: 1,
+//     density: 8,
+//     size: 200,
+//     color: '#fff',
+// }
 // const app = new PIXI.Application({width: window.innerWidth , height: window.innerHeight * 2 });
 app.renderer.background.color = 0x020305;
 app.renderer.view.style.position = "absolute";
