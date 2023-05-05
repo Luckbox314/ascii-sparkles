@@ -115,7 +115,6 @@ function createCircles() {
 }
 
 
-
 function createOptions() {
     const centerer = document.createElement('div');
     centerer.style.display = 'flex';
@@ -242,11 +241,28 @@ const options = createOptions();
 let state = [false];
 window.addEventListener('click', () => {
     showOptions(options, state);
-}
+    }
 );
+
+window.addEventListener('touchstart', () => {
+    showOptions(options, state);
+    }
+);
+
+window.addEventListener('resize', () => {
+    app.resizeTo = window;
+    app.stage.removeChildren();
+    circles = [];
+    createCircles();
+});
 
 // add event listenet when clicking on the options to prevent the window from closing
 options.children[0].addEventListener('click', (e) => {
     e.stopPropagation();
 });
+
+options.children[0].addEventListener('touchstart', (e) => {
+    e.stopPropagation();
+}
+);
 

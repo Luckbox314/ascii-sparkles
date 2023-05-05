@@ -1,0 +1,25 @@
+
+body {
+    font-weight: 100;
+    font-size: 3rem;
+   }
+
+  input {
+    font-size: 3rem;
+    width: 10rem !important;
+  }
+  
+
+
+@media (min-width:1000px) {
+    body {
+        font-weight: 100;
+        font-size: 1rem;
+       }
+    
+      input {
+        font-size: 1rem;
+        width: 4rem !important;
+      }
+  
+}
