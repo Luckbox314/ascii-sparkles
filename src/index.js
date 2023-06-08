@@ -1,8 +1,6 @@
 import * as PIXI from 'pixi.js';
 import {AsciiFilter} from '@pixi/filter-ascii';
 
-const app = new PIXI.Application({width: 400 , height: 400 });
-let circles = [];
 const globalVariables = {
     speed: 1,
     turningSpeed: 1,
@@ -10,14 +8,11 @@ const globalVariables = {
     size: 35,
     color: '#efce7c',
 }
-// const globalVariables = {
-//     speed: 1,
-//     turningSpeed: 1,
-//     density: 8,
-//     size: 200,
-//     color: '#fff',
-// }
-// const app = new PIXI.Application({width: window.innerWidth , height: window.innerHeight * 2 });
+
+
+
+const app = new PIXI.Application({width: 400 , height: 400 });
+let circles = [];
 app.renderer.background.color = 0x020305;
 app.renderer.view.style.position = "absolute";
 app.renderer.view.style.top = 0;
@@ -51,6 +46,48 @@ const circleBounds = new PIXI.Rectangle(-circleBoundsPadding,
     -circleBoundsPadding,
     app.screen.width + circleBoundsPadding * 2,
     app.screen.height + circleBoundsPadding * 2);
+
+
+let dialingTimer;  
+let doneDialingInterval = 300; 
+
+// Wall paper engine properties
+window.wallpaperPropertyListener = {
+    applyUserProperties: function(properties) {
+        if (properties.speed) {
+            globalVariables.speed = properties.speed.value;
+        }
+        if (properties.turningspeed) {
+            globalVariables.turningSpeed = properties.turningspeed.value;
+        }
+        if (properties.color) {
+            var color = properties.color.value.split(' '); // ["1.0", "0.4", "0.2"]
+            color = color.map(function(c) {
+                return Math.ceil(c * 255);
+            });
+            globalVariables.color = 'rgb(' + color + ')';
+            Restart();
+        }
+        if (properties.size) {
+            globalVariables.size = properties.size.value;
+        }
+        if (properties.density) {
+            globalVariables.density = properties.density.value;
+            density = globalVariables.density; // circles per 1000 pixels
+            totalCircles = density * (app.screen.width * app.screen.height) / 1000000;
+            clearTimeout(dialingTimer);
+            dialingTimer = setTimeout(Restart, doneDialingInterval);
+        }
+    },
+};
+
+function Restart() {
+    app.stage.removeChildren();
+    circles = [];
+    createCircles();
+}
+
+
 
 app.ticker.add((delta) => {
     // iterate through the dudes and update their position
@@ -114,155 +151,10 @@ function createCircles() {
     }
 }
 
-
-function createOptions() {
-    const centerer = document.createElement('div');
-    centerer.style.display = 'flex';
-    centerer.style.justifyContent = 'center';
-    centerer.style.alignItems = 'center';
-    centerer.style.width = '100vw';
-    centerer.style.height = '100vh';
-    centerer.style.position = 'absolute';
-    centerer.style.margin = 0;
-    centerer.style.boxSizing = 'border-box';
-
-    const div = document.createElement('div');
-    div.style.background = '#769AB1cf';
-    div.style.borderRadius = '5px';
-    div.style.padding = '10px';
-    // set roboto font
-    div.style.fontFamily = 'Roboto, sans-serif';   
-    div.style.color = 'white';	
-    div.innerHTML = `
-        <div>
-            <label>Speed: </label> 
-            <input type="number" id="speed" value="${globalVariables.speed}" step="0.1"/>
-        </div>
-        <div>
-            <label>Turning Speed: </label>
-            <input type="number" id="turningSpeed" value="${globalVariables.turningSpeed}" step="0.1"/>
-        </div>
-        <div>
-            <label>Density: </label>
-            <input type="number" id="density" value="${globalVariables.density}" />
-        </div>
-        <div>
-            <label>Size: </label>
-            <input type="number" id="size" value="${globalVariables.size}" />
-        </div>
-        <div>
-            <label>Color: </label>
-            <input type="string" id="color" value="${globalVariables.color}" />
-        </div>
-    `
-
-    // style the options so all the inputs are the same width
-    const inputs = div.querySelectorAll('input');
-    inputs.forEach(input => {
-        input.style.width = '60px';
-    });
-
-    const inputContainers = div.querySelectorAll('div');
-    inputContainers.forEach(container => {
-        container.style.display = 'flex';
-        container.style.justifyContent = 'space-between';
-        container.style.margin = '5px';
-    });
-
-    const labels = div.querySelectorAll('label');
-    labels.forEach(label => {
-        label.style.marginRight = '5px';
-    });
-
-    // update the global variables when the inputs change
-    const speedInput = div.querySelector('#speed');
-    speedInput.addEventListener('change', () => {
-        globalVariables.speed = Number(speedInput.value);
-    });
-    const turningSpeedInput = div.querySelector('#turningSpeed');
-    turningSpeedInput.addEventListener('change', () => {
-        globalVariables.turningSpeed = Number(turningSpeedInput.value);
-    });
-    const sizeInput = div.querySelector('#size');
-    sizeInput.addEventListener('change', () => {
-        globalVariables.size = Number(sizeInput.value);
-    });
-    const densityInput = div.querySelector('#density');
-    densityInput.addEventListener('change', () => {
-        globalVariables.density = Number(densityInput.value);
-        // re create the circles
-        app.stage.removeChildren();
-        circles = [];
-        density = globalVariables.density; // circles per 1000 pixels
-        totalCircles = density * (app.screen.width * app.screen.height) / 1000000;
-        createCircles();
-    });
-    const colorInput = div.querySelector('#color');
-    colorInput.addEventListener('change', () => {
-        var reg=/^#([0-9a-f]{3}){1,2}$/i;
-        if (reg.test(colorInput.value)) {
-            globalVariables.color = colorInput.value;
-            app.stage.removeChildren();
-            circles = [];
-            createCircles();
-        }
-    });
-
-
-
-    centerer.appendChild(div);
-
-    
-    centerer.style.display = 'none';
-    document.body.appendChild(centerer)
-    return centerer;
-}
-
-
-
-function showOptions(component, state) {
-    if (state[0]) {
-        console.log("hiding options");
-        component.style.display = 'none';
-        state[0] = false;
-    }
-    else {
-        console.log("showing options");
-        component.style.display = 'flex';
-        state[0] = true;
-    }
-}
-
 document.body.style.margin = 0;
-
-
-const options = createOptions();
-// show the options if the windows is clicked, hide them if it's clicked again
-let state = [false];
-window.addEventListener('click', () => {
-    showOptions(options, state);
-    }
-);
-
-window.addEventListener('touchstart', () => {
-    showOptions(options, state);
-    }
-);
 
 window.addEventListener('resize', () => {
     app.resizeTo = window;
-    app.stage.removeChildren();
-    circles = [];
-    createCircles();
+    Restart();
 });
-
-// add event listenet when clicking on the options to prevent the window from closing
-options.children[0].addEventListener('click', (e) => {
-    e.stopPropagation();
-});
-
-options.children[0].addEventListener('touchstart', (e) => {
-    e.stopPropagation();
-}
-);
 
